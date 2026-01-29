@@ -13,5 +13,4 @@ def search_command(query: str, limit: int = DEFAULT_SEARCH_LIMIT) -> list[dict]:
     return results
 
 
-
 # Remember to use 'in' in Python. Much faster!
