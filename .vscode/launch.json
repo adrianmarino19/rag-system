@@ -1,0 +1,29 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Python: Keyword Search CLI",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${workspaceFolder}/cli/keyword_search_cli.py",
+            "args": [
+                "search",
+                "${input:searchQuery}"
+            ],
+            "console": "integratedTerminal",
+            "justMyCode": true,
+            "python": "${workspaceFolder}/.venv/bin/python",
+            "env": {
+                "PYTHONPATH": "${workspaceFolder}"
+            }
+        }
+    ],
+    "inputs": [
+        {
+            "id": "searchQuery",
+            "type": "promptString",
+            "default": "Little",
+            "description": "Enter the search query"
+        }
+    ]
+}
