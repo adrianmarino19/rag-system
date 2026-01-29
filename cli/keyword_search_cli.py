@@ -3,7 +3,7 @@
 import argparse
 import json
 
-from lib.keyword_search import search_command 
+from lib.keyword_search import search_command
 
 
 def main() -> None:
@@ -26,24 +26,24 @@ def main() -> None:
         case _:
             parser.print_help()
 
+
 if __name__ == "__main__":
     main()
-
 
 
 # it works but without caps lock!
 # perhaps put everything in Classes eh!
 # why did the guy separate his files like that, why I didn't.
-# What is an util. 
+# What is an util.
 
 # Perhaps I should build a project with them to understand their organization...
 # And finish git this weekend!
 
 
 # Que aprendimos?
-## Comienza a poner type hints en todas las functions. 
-## Separa variables. Imaginate que es una aplicacion. 
+## Comienza a poner type hints en todas las functions.
+## Separa variables. Imaginate que es una aplicacion.
 
 
 # No entiendas:
-## os.path -> mas practica. 
+## os.path -> mas practica.
