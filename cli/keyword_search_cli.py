@@ -3,7 +3,7 @@
 import argparse
 import json
 
-from lib.keyword_search import search_command
+from lib.keyword_search import InvertedSearch, search_command
 
 
 def main() -> None:
@@ -22,6 +22,9 @@ def main() -> None:
             results = search_command(args.query)
             for i, movie in enumerate(results, start=1):
                 print(f"{i}. {movie['title']}")
+
+        case "build":
+            print("Building dictionary...")
 
         case _:
             parser.print_help()
