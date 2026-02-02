@@ -11,3 +11,7 @@ dependencies = [
     "pip>=25.3",
     "spacy>=3.8.11",
 ]
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["lib*"]

@@ -2,6 +2,8 @@
 
 import argparse
 import json
+import sys
+from pathlib import Path
 
 from lib.keyword_search import InvertedSearch, search_command
 
@@ -12,6 +14,8 @@ def main() -> None:
 
     search_parser = subparsers.add_parser("search", help="Search movies using BM25")
     search_parser.add_argument("query", type=str, help="Search query")
+
+    build_parser = subparsers.add_parser("build", help="Build inverted index")
 
     args = parser.parse_args()
 
@@ -24,7 +28,13 @@ def main() -> None:
                 print(f"{i}. {movie['title']}")
 
         case "build":
-            print("Building dictionary...")
+            print("Building inverted index...")
+            inverted_search = InvertedSearch()
+            inverted_search.build()
+            print("Saving index...")
+            inverted_search.save()
+            docs = inverted_search.get_documents("merida")
+            print(f"First document for token 'merida' = {docs[0]}")  # This could be much more useful my man. 
 
         case _:
             parser.print_help()

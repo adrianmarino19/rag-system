@@ -16,6 +16,21 @@
             "env": {
                 "PYTHONPATH": "${workspaceFolder}"
             }
+        },
+        {
+            "name": "Python: Build Debugger",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${workspaceFolder}/cli/keyword_search_cli.py",
+            "args": [
+                "build"
+            ],
+            "console": "integratedTerminal",
+            "justMyCode": true,
+            "python": "${workspaceFolder}/.venv/bin/python",
+            "env": {
+                "PYTHONPATH": "${workspaceFolder}"
+            }   
         }
     ],
     "inputs": [
@@ -26,4 +41,6 @@
             "description": "Enter the search query"
         }
     ]
+    
 }
+
