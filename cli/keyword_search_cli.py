@@ -1,5 +1,3 @@
-#!/usr/bin/env python3
-
 import argparse
 import json
 import sys
@@ -59,3 +57,5 @@ if __name__ == "__main__":
 
 # No entiendas:
 ## os.path -> mas practica.
+
+#!/usr/bin/env python3 
