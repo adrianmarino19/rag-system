@@ -27,14 +27,14 @@ def main() -> None:
             for i, movie in enumerate(results, start=1):
                 print(f"{i}. {movie['title']}")
 
-        case "build":
+        case "build":  # Put all this in a function.
             print("Building inverted index...")
-            inverted_search = InvertedSearch()
-            inverted_search.build()
+            idx = InvertedSearch()
+            idx.build()
             print("Saving index...")
-            inverted_search.save()
-            docs = inverted_search.get_documents("merida")
-            print(f"First document for token 'merida' = {docs[0]}")  # This could be much more useful my man. 
+            idx.save()
+            docs = idx.get_documents("merida")
+            print(f"First document for token 'merida' = {docs[0]}")
 
         case _:
             parser.print_help()
@@ -42,7 +42,6 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
-
 
 # it works but without caps lock!
 # perhaps put everything in Classes eh!

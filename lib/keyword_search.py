@@ -29,9 +29,24 @@ class InvertedSearch:
     def __init__(self):
         """Initialize an empty inverted index and document map."""
         self.index: dict[str, list[int]] = defaultdict(list)
-        self.docmap: dict[int, str] = {}  # not really sure if this is an object.
+        self.docmap: dict[int, dict] = {}
+        self.index_path = os.path.join(CACHE_DIR, "index.pkl")
+        self.docmap_path = os.path.join(CACHE_DIR, "docmap.pkl") 
 
-    def __add_documents(self, doc_id: int, text: str) -> None:
+    def build(self) -> None:
+        """
+        Build the inverted index from all movies in the dataset.
+
+        Loads all movies and indexes their titles and descriptions.
+        """
+        movies = load_movies()
+
+        for movie in movies:
+            doc_id = movie["id"]
+            text = f"{movie['title']} {movie['description']}"
+            self.__add_documents(doc_id, text, movie)
+
+    def __add_documents(self, doc_id: int, text: str, movie: dict) -> None:
         """
         Add a document to the inverted index (private method).
 
@@ -39,7 +54,7 @@ class InvertedSearch:
             doc_id: Unique identifier for the document
             text: The text content to index
         """
-        self.docmap[doc_id] = text
+        self.docmap[doc_id] = movie
 
         doc = nlp(text)
         for token in doc:
@@ -67,28 +82,24 @@ class InvertedSearch:
         else:
             print("Term not found...")
 
-    def build(self) -> None:
-        """
-        Build the inverted index from all movies in the dataset.
-
-        Loads all movies and indexes their titles and descriptions.
-        """
-        movies = load_movies()
-
-        for movie in movies:
-            doc_id = movie["id"]
-            text = f"{movie['title']} {movie['description']}"
-            self.__add_documents(doc_id, text)
-
     def save(self) -> None:
         """Save the inverted index and dictionary to disk."""
         CACHE_DIR.mkdir(exist_ok=True)
 
-        with open("cache/index.pkl", "wb") as f:
+        with open(self.index_path, "wb") as f:
             pickle.dump(self.index, f)
-        with open("cache/docmap.pkl", "wb") as f:
-            pickle.dump(self.docmap, f)
 
+        with open(self.docmap_path, "wb") as f:
+            pickle.dump(self.docmap, f)
+    
+    def load(self) -> None:
+        """Load the inverted index and document map from disk."""
+        with open(self.index_path, "rb") as f:
+            self.index = pickle.load(f)
+
+        with open(self.docmap_path, "rb") as f:
+            self.docmap = pickle.load(f)
+        
 
 def search_command(query: str, limit: int = DEFAULT_SEARCH_LIMIT) -> list[dict]:
     """
@@ -101,17 +112,32 @@ def search_command(query: str, limit: int = DEFAULT_SEARCH_LIMIT) -> list[dict]:
     Returns:
         List of movie dictionaries matching the query
     """
-    movies = load_movies()
-    results = []
     preproc_query = preprocessing(query)
+    
+    idx = InvertedSearch.load()
 
-    for movie in movies:
-        preproc_title = preprocessing(movie["title"])
-        if matching_token(preproc_query, preproc_title):
-            results.append(movie)
-            if len(results) >= limit:
-                break
+    results = []
+    for token in preproc_query:
+        if token in idx.index:
+            results.append(idx.index[token])  # I am not being efficient! Pick up from here.
+        
+        doc_ids = idx.get_documents(query)
+        results.append(doc_ids)
+        if len(results) >= limit
+
     return results
+    
+    # movies = load_movies()
+    # results = []
+    
+
+    # for movie in movies:
+    #     preproc_title = preprocessing(movie["title"])
+    #     if matching_token(preproc_query, preproc_title):
+    #         results.append(movie)
+    #         if len(results) >= limit:
+    #             break
+
 
 
 def matching_token(query_tokens: str, title_tokens: str) -> bool:
