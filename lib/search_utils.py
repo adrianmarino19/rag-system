@@ -1,7 +1,7 @@
 import json
 import os
-from string import punctuation
 from pathlib import Path
+from string import punctuation
 
 import spacy
 

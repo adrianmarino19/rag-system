@@ -3,7 +3,7 @@ import json
 import sys
 from pathlib import Path
 
-from lib.keyword_search import InvertedSearch, search_command, build_command
+from lib.keyword_search import InvertedSearch, build_command, search_command
 
 
 def main() -> None:

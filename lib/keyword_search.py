@@ -8,9 +8,9 @@ import spacy
 from spacy.tokens import Token
 
 from .search_utils import (
+    CACHE_DIR,
     DEFAULT_SEARCH_LIMIT,
     PROJECT_ROOT,
-    CACHE_DIR,
     STOPWORDS,
     load_movies,
     nlp,
@@ -31,7 +31,7 @@ class InvertedSearch:
         self.index: dict[str, list[int]] = defaultdict(list)
         self.docmap: dict[int, dict] = {}
         self.index_path = os.path.join(CACHE_DIR, "index.pkl")
-        self.docmap_path = os.path.join(CACHE_DIR, "docmap.pkl") 
+        self.docmap_path = os.path.join(CACHE_DIR, "docmap.pkl")
 
     def build(self) -> None:
         """
@@ -60,7 +60,7 @@ class InvertedSearch:
         for token in doc:
             lemma = token.lemma_.lower()
             if (
-                not token.is_punct 
+                not token.is_punct
                 and token.text.lower() not in STOPWORDS
                 and doc_id not in self.index[lemma]
             ):
@@ -91,7 +91,7 @@ class InvertedSearch:
 
         with open(self.docmap_path, "wb") as f:
             pickle.dump(self.docmap, f)
-    
+
     def load(self) -> None:
         """Load the inverted index and document map from disk."""
         with open(self.index_path, "rb") as f:
@@ -99,7 +99,7 @@ class InvertedSearch:
 
         with open(self.docmap_path, "rb") as f:
             self.docmap = pickle.load(f)
-        
+
 
 def search_command(query: str, limit: int = DEFAULT_SEARCH_LIMIT) -> list[dict]:
     """
@@ -111,7 +111,7 @@ def search_command(query: str, limit: int = DEFAULT_SEARCH_LIMIT) -> list[dict]:
 
     Returns:
         List of movie dictionaries matching the query
-    """    
+    """
     preproc_query = preprocessing(query)
 
     idx = InvertedSearch()
@@ -121,14 +121,15 @@ def search_command(query: str, limit: int = DEFAULT_SEARCH_LIMIT) -> list[dict]:
     for word in preproc_query:
         all_doc_ids = idx.get_documents(word)
         if not all_doc_ids:
-            continue 
+            continue
         for doc_id in all_doc_ids:
             if doc_id not in results:
                 results.append(idx.docmap[doc_id])
                 if len(results) >= limit:
-                    return results  
-            
+                    return results
+
     return results
+
 
 def build_command():
     print("Building inverted index...")
@@ -137,6 +138,7 @@ def build_command():
     print("Saving index...")
     idx.save()
     return idx
+
 
 def matching_token(query_tokens: str, title_tokens: str) -> bool:
     """
