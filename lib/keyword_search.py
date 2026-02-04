@@ -1,6 +1,6 @@
 import os
 import pickle
-from collections import defaultdict
+from collections import defaultdict, Counter
 from pathlib import Path
 
 import nltk
@@ -30,8 +30,10 @@ class InvertedSearch:
         """Initialize an empty inverted index and document map."""
         self.index: dict[str, list[int]] = defaultdict(list)
         self.docmap: dict[int, dict] = {}
+        self.term_frequencies: dict[int, Counter] = {}
         self.index_path = os.path.join(CACHE_DIR, "index.pkl")
         self.docmap_path = os.path.join(CACHE_DIR, "docmap.pkl")
+        self.tf_path = os.path.join(CACHE_DIR, "term_frequencies.pkl")
 
     def build(self) -> None:
         """
@@ -55,16 +57,15 @@ class InvertedSearch:
             text: The text content to index
         """
         self.docmap[doc_id] = movie
+        self.term_frequencies[doc_id] = Counter()
 
         doc = nlp(text)
         for token in doc:
             lemma = token.lemma_.lower()
-            if (
-                not token.is_punct
-                and token.text.lower() not in STOPWORDS
-                and doc_id not in self.index[lemma]
-            ):
-                self.index[lemma].append(doc_id)
+            if not token.is_punct and token.text.lower() not in STOPWORDS:
+                self.term_frequencies[doc_id].update([lemma])
+                if doc_id not in self.index[lemma]:
+                    self.index[lemma].append(doc_id)
 
     def get_documents(self, term: str) -> list[int] | None:
         """
@@ -81,9 +82,20 @@ class InvertedSearch:
             return self.index[preproc_term]
         else:
             return None
+    
+    def get_tf(self, doc_id, term) -> int:
+        """Return term frequency for a single-token term in a document."""
+        preproc_term = preprocessing(term)
+        
+        if len(preproc_term) != 1:
+            raise ValueError("Term must be a single token.")
+        else:
+            preproc_term = preproc_term[0]
+            term_in_doc = self.term_frequencies[doc_id][preproc_term]        
+            return term_in_doc
 
     def save(self) -> None:
-        """Save the inverted index and dictionary to disk."""
+        """Save the inverted index, dictionary, and term frequencies to disk."""
         CACHE_DIR.mkdir(exist_ok=True)
 
         with open(self.index_path, "wb") as f:
@@ -91,14 +103,20 @@ class InvertedSearch:
 
         with open(self.docmap_path, "wb") as f:
             pickle.dump(self.docmap, f)
+        
+        with open(self.tf_path, "wb") as f:
+            pickle.dump(self.term_frequencies, f)
 
     def load(self) -> None:
-        """Load the inverted index and document map from disk."""
+        """Load the inverted index, dictionary, and term frequencies from disk."""
         with open(self.index_path, "rb") as f:
             self.index = pickle.load(f)
 
         with open(self.docmap_path, "rb") as f:
             self.docmap = pickle.load(f)
+        
+        with open(self.tf_path, "rb") as f:
+            self.term_frequencies = pickle.load(f)
 
 
 def search_command(query: str, limit: int = DEFAULT_SEARCH_LIMIT) -> list[dict]:
@@ -131,13 +149,30 @@ def search_command(query: str, limit: int = DEFAULT_SEARCH_LIMIT) -> list[dict]:
     return results
 
 
-def build_command():
+def build_command() -> InvertedSearch:
+    """
+    Build and persist the inverted index.
+
+    Returns:
+        InvertedSearch: Built index instance
+    """
     print("Building inverted index...")
     idx = InvertedSearch()
     idx.build()
     print("Saving index...")
     idx.save()
     return idx
+
+
+def tf_command(doc_id: str, term: str) -> int:
+    """
+    """
+    idx = InvertedSearch()
+    try:
+        idx.load()
+    except FileNotFoundError as e:
+        raise
+    return idx.get_tf(doc_id, term)
 
 
 def matching_token(query_tokens: str, title_tokens: str) -> bool:
@@ -171,3 +206,6 @@ def preprocessing(text: str) -> list[str]:
         if not token.is_punct and token.text.lower() not in STOPWORDS:
             tokens.append(token.lemma_.lower())  # Append stemmatized word.
     return tokens
+
+# are the type hints good enough?
+# 

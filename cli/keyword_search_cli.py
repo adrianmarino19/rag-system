@@ -3,7 +3,7 @@ import json
 import sys
 from pathlib import Path
 
-from lib.keyword_search import InvertedSearch, build_command, search_command
+from lib.keyword_search import InvertedSearch, build_command, search_command, tf_command
 
 
 def main() -> None:
@@ -14,6 +14,10 @@ def main() -> None:
     search_parser.add_argument("query", type=str, help="Search query")
 
     build_parser = subparsers.add_parser("build", help="Build inverted index")
+    
+    tf_parser = subparsers.add_parser("tf", help="Build inverted index")
+    tf_parser.add_argument("doc_id", type=int, help="Movie ID.")
+    tf_parser.add_argument("term", type=str, help="Term to look for in Movie ID.")
 
     args = parser.parse_args()
 
@@ -29,6 +33,11 @@ def main() -> None:
             idx = build_command()
             docs = idx.get_documents("merida")
             print(f"First document for token 'merida' = {docs[0]}")
+
+        case "tf":
+            results = tf_command(args.doc_id, args.term)            
+            if results:
+                print(f"Your term appears {results} times in ID {args.doc_id}")
 
         case _:
             parser.print_help()
