@@ -169,17 +169,3 @@ def preprocessing(text: str) -> list[str]:
         if not token.is_punct and token.text.lower() not in STOPWORDS:
             tokens.append(token.lemma_.lower())  # Append stemmatized word.
     return tokens
-
-
-# def preprocess_single_word(word: str) -> str | None:
-#     """
-#     Preprocess a single word. Same base functionality as preprocessing().
-#     Return the stemmatized word as a string if it is not a stopword or punctuation, otherwise return None.
-#     """
-#     doc = nlp(word)
-#     for token in doc:
-#         if not token.is_punct and token.text.lower() not in STOPWORDS:
-#             return token.lemma_.lower()
-
-## Remember to use 'in' in Python. Much faster!
-## You must compare IN vs string directly to understand if it's substring.
