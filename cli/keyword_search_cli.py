@@ -3,7 +3,7 @@ import json
 import sys
 from pathlib import Path
 
-from lib.keyword_search import InvertedSearch, search_command
+from lib.keyword_search import InvertedSearch, search_command, build_command
 
 
 def main() -> None:
@@ -22,15 +22,11 @@ def main() -> None:
             print(f"Searching for: {args.query}")
 
             results = search_command(args.query)
-            for i, movie in enumerate(results, start=1):
-                print(f"{i}. {movie['title']}")
+            for i, movie in enumerate(results, 1):
+                print(f"{i}. {movie['id']} {movie['title']}")
 
-        case "build":  # Put all this in a function.
-            print("Building inverted index...")
-            idx = InvertedSearch()
-            idx.build()
-            print("Saving index...")
-            idx.save()
+        case "build":
+            idx = build_command()
             docs = idx.get_documents("merida")
             print(f"First document for token 'merida' = {docs[0]}")
 

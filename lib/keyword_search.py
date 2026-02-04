@@ -66,7 +66,7 @@ class InvertedSearch:
             ):
                 self.index[lemma].append(doc_id)
 
-    def get_documents(self, term: str) -> list or None:
+    def get_documents(self, term: str) -> list[int] | None:
         """
         Retrieve document IDs containing the given term.
 
@@ -74,13 +74,13 @@ class InvertedSearch:
             term: The search term to look up
 
         Returns:
-            Sorted list of document IDs, or None if term not found
+            List of document IDs, or None if term not found
         """
         preproc_term = "".join(preprocessing(term))
         if preproc_term in self.index:
             return self.index[preproc_term]
         else:
-            print("Term not found...")
+            return None
 
     def save(self) -> None:
         """Save the inverted index and dictionary to disk."""
@@ -111,34 +111,32 @@ def search_command(query: str, limit: int = DEFAULT_SEARCH_LIMIT) -> list[dict]:
 
     Returns:
         List of movie dictionaries matching the query
-    """
+    """    
     preproc_query = preprocessing(query)
-    
-    idx = InvertedSearch.load()
+
+    idx = InvertedSearch()
+    idx.load()
 
     results = []
-    for token in preproc_query:
-        if token in idx.index:
-            results.append(idx.index[token])  # I am not being efficient! Pick up from here.
-        
-        doc_ids = idx.get_documents(query)
-        results.append(doc_ids)
-        if len(results) >= limit
-
+    for word in preproc_query:
+        all_doc_ids = idx.get_documents(word)
+        if not all_doc_ids:
+            continue 
+        for doc_id in all_doc_ids:
+            if doc_id not in results:
+                results.append(idx.docmap[doc_id])
+                if len(results) >= limit:
+                    return results  
+            
     return results
-    
-    # movies = load_movies()
-    # results = []
-    
 
-    # for movie in movies:
-    #     preproc_title = preprocessing(movie["title"])
-    #     if matching_token(preproc_query, preproc_title):
-    #         results.append(movie)
-    #         if len(results) >= limit:
-    #             break
-
-
+def build_command():
+    print("Building inverted index...")
+    idx = InvertedSearch()
+    idx.build()
+    print("Saving index...")
+    idx.save()
+    return idx
 
 def matching_token(query_tokens: str, title_tokens: str) -> bool:
     """
