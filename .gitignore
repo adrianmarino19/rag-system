@@ -14,3 +14,4 @@ wheels/
 lessons.txt
 cache/
 /exercises
+.DS_Store

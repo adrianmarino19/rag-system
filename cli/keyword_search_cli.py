@@ -14,11 +14,13 @@ def main() -> None:
     search_parser.add_argument("query", type=str, help="Search query")
 
     build_parser = subparsers.add_parser("build", help="Build inverted index")
-    
+
     tf_parser = subparsers.add_parser("tf", help="Build inverted index")
     tf_parser.add_argument("doc_id", type=int, help="Movie ID.")
     tf_parser.add_argument("term", type=str, help="Term to look for in Movie ID.")
 
+    idf_parser = subparsers.add_parser("idf", help="Build inverted index")
+    idf_parser.add_argument("doc_id", type=int, help="Movie ID.")
     args = parser.parse_args()
 
     match args.command:
@@ -35,9 +37,9 @@ def main() -> None:
             print(f"First document for token 'merida' = {docs[0]}")
 
         case "tf":
-            results = tf_command(args.doc_id, args.term)            
+            results = tf_command(args.doc_id, args.term)
             if results:
-                print(f"Your term appears {results} times in ID {args.doc_id}")
+                print(f"Your term appears {results} time(s) in ID {args.doc_id}")
 
         case _:
             parser.print_help()

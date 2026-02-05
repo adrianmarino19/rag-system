@@ -1,6 +1,6 @@
 import os
 import pickle
-from collections import defaultdict, Counter
+from collections import Counter, defaultdict
 from pathlib import Path
 
 import nltk
@@ -82,16 +82,16 @@ class InvertedSearch:
             return self.index[preproc_term]
         else:
             return None
-    
+
     def get_tf(self, doc_id, term) -> int:
         """Return term frequency for a single-token term in a document."""
         preproc_term = preprocessing(term)
-        
+
         if len(preproc_term) != 1:
             raise ValueError("Term must be a single token.")
         else:
             preproc_term = preproc_term[0]
-            term_in_doc = self.term_frequencies[doc_id][preproc_term]        
+            term_in_doc = self.term_frequencies[doc_id][preproc_term]
             return term_in_doc
 
     def save(self) -> None:
@@ -103,7 +103,7 @@ class InvertedSearch:
 
         with open(self.docmap_path, "wb") as f:
             pickle.dump(self.docmap, f)
-        
+
         with open(self.tf_path, "wb") as f:
             pickle.dump(self.term_frequencies, f)
 
@@ -114,7 +114,7 @@ class InvertedSearch:
 
         with open(self.docmap_path, "rb") as f:
             self.docmap = pickle.load(f)
-        
+
         with open(self.tf_path, "rb") as f:
             self.term_frequencies = pickle.load(f)
 
@@ -165,14 +165,26 @@ def build_command() -> InvertedSearch:
 
 
 def tf_command(doc_id: str, term: str) -> int:
-    """
-    """
+    """ """
+    idx = loader_helper()
+    return idx.get_tf(doc_id, term)
+
+
+def idf_command(term: str) -> int:
+    """ """
+    idx = loader_helper()
+
+    pass
+
+
+def loader_helper() -> InvertedSearch:
     idx = InvertedSearch()
     try:
         idx.load()
     except FileNotFoundError as e:
-        raise
-    return idx.get_tf(doc_id, term)
+        raise FileNotFoundError("No data. You must use build command first...") from e
+
+    return idx
 
 
 def matching_token(query_tokens: str, title_tokens: str) -> bool:
@@ -207,5 +219,6 @@ def preprocessing(text: str) -> list[str]:
             tokens.append(token.lemma_.lower())  # Append stemmatized word.
     return tokens
 
+
 # are the type hints good enough?
-# 
+#
