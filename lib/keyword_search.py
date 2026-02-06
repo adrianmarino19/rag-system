@@ -1,5 +1,6 @@
 import os
 import pickle
+import math
 from collections import Counter, defaultdict
 from pathlib import Path
 
@@ -173,8 +174,9 @@ def tf_command(doc_id: str, term: str) -> int:
 def idf_command(term: str) -> int:
     """ """
     idx = loader_helper()
-
-    pass
+    total_doc_count = len(idx.docmap)
+    term_match_doc_count = len(idx.get_documents(term))
+    return math.log((total_doc_count + 1) / (term_match_doc_count + 1))
 
 
 def loader_helper() -> InvertedSearch:

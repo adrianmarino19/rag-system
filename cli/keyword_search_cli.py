@@ -3,7 +3,13 @@ import json
 import sys
 from pathlib import Path
 
-from lib.keyword_search import InvertedSearch, build_command, search_command, tf_command
+from lib.keyword_search import (
+    InvertedSearch,
+    build_command,
+    search_command,
+    tf_command,
+    idf_command,
+)
 
 
 def main() -> None:
@@ -16,11 +22,12 @@ def main() -> None:
     build_parser = subparsers.add_parser("build", help="Build inverted index")
 
     tf_parser = subparsers.add_parser("tf", help="Build inverted index")
-    tf_parser.add_argument("doc_id", type=int, help="Movie ID.")
-    tf_parser.add_argument("term", type=str, help="Term to look for in Movie ID.")
+    tf_parser.add_argument("doc_id", type=int, help="Movie ID")
+    tf_parser.add_argument("term", type=str, help="Term to look for in Movie ID")
 
     idf_parser = subparsers.add_parser("idf", help="Build inverted index")
-    idf_parser.add_argument("doc_id", type=int, help="Movie ID.")
+    idf_parser.add_argument("term", type=str, help="Term to used for calculation")
+
     args = parser.parse_args()
 
     match args.command:
@@ -40,6 +47,10 @@ def main() -> None:
             results = tf_command(args.doc_id, args.term)
             if results:
                 print(f"Your term appears {results} time(s) in ID {args.doc_id}")
+
+        case "idf":
+            result = idf_command(args.term)
+            print(f"Inverse document frequency of '{args.term}': {result:.2f}")
 
         case _:
             parser.print_help()
