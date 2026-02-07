@@ -84,7 +84,7 @@ class InvertedSearch:
         else:
             return None
 
-    def get_tf(self, doc_id, term) -> int:
+    def get_tf(self, doc_id: int, term: str) -> int:
         """Return term frequency for a single-token term in a document."""
         preproc_term = preprocessing(term)
 
@@ -94,6 +94,18 @@ class InvertedSearch:
             preproc_term = preproc_term[0]
             term_in_doc = self.term_frequencies[doc_id][preproc_term]
             return term_in_doc
+
+    def get_idf(self, term: str) -> int:
+        """Return term frequency for a single-token term in a document."""
+        total_doc_count = len(self.docmap)
+        term_match_doc_count = len(self.get_documents(term))
+        idf = math.log((total_doc_count + 1) / (term_match_doc_count + 1))
+        return idf
+
+    def get_tf_idf(self, doc_id: int, term: str) -> int:
+        tf = self.get_tf(doc_id, term)
+        idf = self.get_idf(term)
+        return tf * idf
 
     def save(self) -> None:
         """Save the inverted index, dictionary, and term frequencies to disk."""
@@ -165,21 +177,25 @@ def build_command() -> InvertedSearch:
     return idx
 
 
-def tf_command(doc_id: str, term: str) -> int:
-    """ """
+def tf_command(doc_id: int, term: str) -> int:
+    """Return the term frequency for a term in a document."""
     idx = loader_helper()
     return idx.get_tf(doc_id, term)
 
 
 def idf_command(term: str) -> int:
-    """ """
+    """Return the inverse document frequency for a term."""
     idx = loader_helper()
-    total_doc_count = len(idx.docmap)
-    term_match_doc_count = len(idx.get_documents(term))
-    return math.log((total_doc_count + 1) / (term_match_doc_count + 1))
+    return idx.get_idf(term)
+
+
+def tf_idf_command(doc_id: int, term: str) -> int:
+    idx = loader_helper()
+    return idx.get_tf_idf(doc_id, term)
 
 
 def loader_helper() -> InvertedSearch:
+    """Load and return a persisted inverted index."""
     idx = InvertedSearch()
     try:
         idx.load()

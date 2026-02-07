@@ -9,6 +9,7 @@ from lib.keyword_search import (
     search_command,
     tf_command,
     idf_command,
+    tf_idf_command,
 )
 
 
@@ -21,12 +22,20 @@ def main() -> None:
 
     build_parser = subparsers.add_parser("build", help="Build inverted index")
 
-    tf_parser = subparsers.add_parser("tf", help="Build inverted index")
+    tf_parser = subparsers.add_parser("tf", help="Find term frequency")
     tf_parser.add_argument("doc_id", type=int, help="Movie ID")
     tf_parser.add_argument("term", type=str, help="Term to look for in Movie ID")
 
-    idf_parser = subparsers.add_parser("idf", help="Build inverted index")
-    idf_parser.add_argument("term", type=str, help="Term to used for calculation")
+    idf_parser = subparsers.add_parser(
+        "idf", help="Find the inverse document frequency of a term"
+    )
+    idf_parser.add_argument("term", type=str, help="Term to use in calculation")
+
+    tf_idf_parser = subparsers.add_parser(
+        "tfidf", help="Find the TF-IDF score of a term"
+    )
+    tf_idf_parser.add_argument("doc_id", type=int, help="Movie ID")
+    tf_idf_parser.add_argument("term", type=str, help="Term to use in calculation")
 
     args = parser.parse_args()
 
@@ -50,6 +59,10 @@ def main() -> None:
 
         case "idf":
             result = idf_command(args.term)
+            print(f"Inverse document frequency of '{args.term}': {result:.2f}")
+
+        case "tfidf":
+            result = tf_idf_command(args.doc_id, args.term)
             print(f"Inverse document frequency of '{args.term}': {result:.2f}")
 
         case _:
