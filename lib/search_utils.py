@@ -1,22 +1,21 @@
 import json
 import os
-from pathlib import Path
-from string import punctuation
-
-import spacy
-
-nlp = spacy.load("en_core_web_sm")
 
 DEFAULT_SEARCH_LIMIT = 5
-STOPWORDS = nlp.Defaults.stop_words
 
-PROJECT_ROOT = Path(__file__).resolve().parents[1]
-DATA_PATH = PROJECT_ROOT / "data" / "movies.json"
-CACHE_DIR = PROJECT_ROOT / "cache"
+PROJECT_ROOT = os.path.dirname(os.path.dirname(__file__))
+DATA_PATH = os.path.join(PROJECT_ROOT, "data", "movies.json")
+STOPWORDS_PATH = os.path.join(PROJECT_ROOT, "data", "stopwords.txt")
+
+CACHE_DIR = os.path.join(PROJECT_ROOT, "cache")
 
 
-# Save all movies in a dictionary
 def load_movies() -> list[dict]:
-    with DATA_PATH.open("r") as file:
-        data = json.load(file)
+    with open(DATA_PATH, "r") as f:
+        data = json.load(f)
     return data["movies"]
+
+
+def load_stopwords() -> list[str]:
+    with open(STOPWORDS_PATH, "r") as f:
+        return f.read().splitlines()
