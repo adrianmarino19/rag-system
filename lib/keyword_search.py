@@ -69,10 +69,6 @@ class InvertedIndex:
 
 
 
-
-
-
-
     def get_idf(self, term: str) -> float:
         tokens = tokenize_text(term)
         if len(tokens) != 1:
