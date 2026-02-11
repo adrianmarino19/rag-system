@@ -6,6 +6,9 @@ class SemanticSearch:
         self.model = SentenceTransformer(model_name)
 
 
+
+
+
 # Outside of the class definition, create a new function called verify_model that creates an instance of the SemanticSearch class and prints the model information:
 # Model loaded: {MODEL}, where {MODEL} is the .model string representation.
 # Max sequence length: {MAX_LENGTH}, where {MAX_LENGTH} is the .max_seq_length property of the model.
