@@ -65,6 +65,14 @@ class InvertedIndex:
         token = tokens[0]
         return self.term_frequencies[doc_id][token]
 
+
+
+
+
+
+
+
+
     def get_idf(self, term: str) -> float:
         tokens = tokenize_text(term)
         if len(tokens) != 1:
