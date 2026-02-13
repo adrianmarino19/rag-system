@@ -2,13 +2,13 @@ from sentence_transformers import SentenceTransformer
 
 
 class SemanticSearch:
-    def __init__(self, model_name: str = "all-MiniLM-L6-v2"):
+    def __init__(self, model_name="all-MiniLM-L6-v2"):
         self.model = SentenceTransformer(model_name)
 
-
-# Outside of the class definition, create a new function called verify_model that creates an instance of the SemanticSearch class and prints the model information:
-# Model loaded: {MODEL}, where {MODEL} is the .model string representation.
-# Max sequence length: {MAX_LENGTH}, where {MAX_LENGTH} is the .max_seq_length property of the model.
+    def generate_embedding(self, text):
+        if not text or not text.strip():
+            raise ValueError("cannot generate embedding for empty text")
+        return self.model.encode([text])[0]
 
 
 def verify_model():
@@ -17,5 +17,9 @@ def verify_model():
     print(f"Max sequence length: {search_instance.model.max_seq_length}")
 
 
-if __name__ == "__main__":
-    verify_model()
+def embed_text(text):
+    search_instance = SemanticSearch()
+    embedding = search_instance.generate_embedding(text)
+    print(f"Text: {text}")
+    print(f"First 3 dimensions: {embedding[:3]}")
+    print(f"Dimensions: {embedding.shape[0]}")

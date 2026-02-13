@@ -18,12 +18,28 @@
             }
         },
         {
-            "name": "Python: Build Debugger",
+            "name": "Python: Build",
             "type": "debugpy",
             "request": "launch",
             "program": "${workspaceFolder}/cli/keyword_search_cli.py",
             "args": [
                 "build"
+            ],
+            "console": "integratedTerminal",
+            "justMyCode": true,
+            "python": "${workspaceFolder}/.venv/bin/python",
+            "env": {
+                "PYTHONPATH": "${workspaceFolder}"
+            }   
+        },
+        {
+            "name": "Python: Verify",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${workspaceFolder}/cli/semantic_search_cli.py",
+            "args": [
+                "verify",
+                "${input:searchQuery}"
             ],
             "console": "integratedTerminal",
             "justMyCode": true,

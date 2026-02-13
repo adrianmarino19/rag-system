@@ -1,26 +1,28 @@
+#!/usr/bin/env python3
+
 import argparse
-import os
-import sys
-from pathlib import Path
 
-project_root = Path(__file__).parent.parent
-sys.path.insert(0, str(project_root))
-
-from lib.semantic_search import verify_model
+from lib.semantic_search import embed_text, verify_model
 
 
-def main():
+def main() -> None:
     parser = argparse.ArgumentParser(description="Semantic Search CLI")
-
     subparsers = parser.add_subparsers(dest="command", help="Available commands")
+
     subparsers.add_parser("verify", help="Verify that the embedding model is loaded")
+
+    single_embed_parser = subparsers.add_parser(
+        "embed_text", help="Generate an embedding for a single text"
+    )
+    single_embed_parser.add_argument("text", type=str, help="Text to embed")
 
     args = parser.parse_args()
 
     match args.command:
         case "verify":
-            print("Verifying...")
             verify_model()
+        case "embed_text":
+            embed_text(args.text)
         case _:
             parser.print_help()
 
